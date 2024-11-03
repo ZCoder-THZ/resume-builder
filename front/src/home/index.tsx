@@ -37,7 +37,6 @@ function ResumeBuilder() {
         address: '',
       },
       education: [{ institution: '', degree: '', year: '' }],
-      skill: [' '],
       project: [
         {
           name: '',
