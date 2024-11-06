@@ -22,7 +22,7 @@ function Project() {
   return (
     <>
       <Typography variant="h6" gutterBottom>
-        Projects
+        Experiences
       </Typography>
       {fields.map((field, index) => (
         <Stack key={field.id} sx={{ marginBottom: 2 }}>
@@ -87,7 +87,7 @@ function Project() {
             onClick={() => remove(index)}
             startIcon={<RemoveCircleIcon />}
           >
-            Remove Project
+            Remove Experience
           </Button>
         </Stack>
       ))}

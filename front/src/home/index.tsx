@@ -1,9 +1,9 @@
 import { Box, Button, TextField, Typography } from '@mui/material';
 import Education from './Education';
 import { useForm, Controller, FormProvider } from 'react-hook-form';
-
+import SocialLinks from './SocialLinks';
 import Skill from './Skill';
-import Project from './Project';
+import Project from './Experience';
 
 type PersonalInfo = {
   name: string;
@@ -19,12 +19,13 @@ type FormData = {
   personalInfo: PersonalInfo;
   education: EducationType[];
   skill: Skills[];
-  project: Array<{
+  experience: Array<{
     name: string;
     description: string;
     startDate: string;
     endDate: string;
   }>;
+  github: string;
 };
 
 function ResumeBuilder() {
@@ -37,7 +38,8 @@ function ResumeBuilder() {
         address: '',
       },
       education: [{ institution: '', degree: '', year: '' }],
-      project: [
+      github: '',
+      experience: [
         {
           name: '',
           description: '',
@@ -96,8 +98,11 @@ function ResumeBuilder() {
 
         <Education />
         <Project />
-        <Skill />
 
+        <Skill />
+        <div className="mb-3"></div>
+        <SocialLinks />
+        <br />
         <Button
           variant="contained"
           color="primary"
