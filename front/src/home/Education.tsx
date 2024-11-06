@@ -15,7 +15,7 @@ function Education() {
         Education
       </Typography>
       {fields.map((field, index) => (
-        <Stack direction="row" spacing={2} key={field.id}>
+        <Stack direction="row" sx={{ mb: 3 }} spacing={2} key={field.id}>
           <Controller
             name={`education.${index}.institution`}
             control={control}
