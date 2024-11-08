@@ -1,6 +1,6 @@
-import { env } from "@/common/utils/envConfig";
+import { env } from '@/common/utils/envConfig';
 // src/common/dbConnection.ts
-import mysql from "mysql2";
+import mysql from 'mysql2';
 
 // const dbConnection = mysql.createConnection({
 //   host: env.DB_HOST || 'localhost', // Use environment variable for host
@@ -11,18 +11,18 @@ import mysql from "mysql2";
 // });
 
 const dbConnection = mysql.createConnection({
-  host: "localhost", // Use environment variable for host
-  port: "3306",
-  user: "root",
-  password: "secret",
-  database: "issue_tracker",
+  host: 'localhost', // Use environment variable for host
+  port: 3306, // Ensure port is a number
+  user: 'root',
+  password: 'secret',
+  database: 'resume_builder',
 });
 
 dbConnection.connect((err) => {
   if (err) {
-    console.error("Error connecting to MySQL:", err);
+    console.error('Error connecting to MySQL:', err);
   } else {
-    console.log("Connected to MySQL");
+    console.log('Connected to MySQL');
   }
 });
 

@@ -1,5 +1,5 @@
 {
-  "name": "ai-assitant",
+  "name": "ai-assistant",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -10,24 +10,24 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@emotion/react": "^11.13.3",
-    "@emotion/styled": "^11.13.0",
-    "@mui/icons-material": "^6.1.6",
-    "@mui/material": "^6.1.6",
-    "@mui/styled-engine-sc": "^6.1.6",
-    "@mui/x-date-pickers": "^7.22.1",
+    "@radix-ui/react-slot": "^1.1.0",
     "axios": "^1.7.7",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.1",
     "dayjs": "^1.11.13",
+    "lucide-react": "^0.454.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.53.1",
     "react-select": "^5.8.2",
     "styled-components": "^6.1.13",
     "stylis-plugin-rtl": "^2.1.1",
-    "swr": "^2.2.5"
+    "tailwind-merge": "^2.5.4",
+    "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
     "@eslint/js": "^9.11.1",
+    "@types/node": "^22.9.0",
     "@types/react": "^18.3.10",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.2",
