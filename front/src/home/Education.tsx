@@ -1,9 +1,8 @@
-import { useFieldArray, Controller, useFormContext } from 'react-hook-form';
-import { Stack, TextField, Button, Typography } from '@mui/material';
-import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
-
+import { useFormContext, useFieldArray } from 'react-hook-form';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 function Education() {
-  const { control } = useFormContext();
+  const { control, register } = useFormContext();
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'education',
@@ -11,39 +10,63 @@ function Education() {
 
   return (
     <>
-      <Typography variant="h6" gutterBottom>
-        Education
-      </Typography>
+      <h6 className="text-2xl">Education</h6>
       {fields.map((field, index) => (
-        <Stack direction="row" sx={{ mb: 3 }} spacing={2} key={field.id}>
-          <Controller
-            name={`education.${index}.institution`}
-            control={control}
-            render={({ field }) => (
-              <TextField fullWidth label="Institution" {...field} />
-            )}
-          />
-          <Controller
-            name={`education.${index}.degree`}
-            control={control}
-            render={({ field }) => (
-              <TextField fullWidth label="Degree" {...field} />
-            )}
-          />
-          <Controller
-            name={`education.${index}.year`}
-            control={control}
-            render={({ field }) => (
-              <TextField fullWidth label="Year" {...field} />
-            )}
-          />
-          {/* ...other fields */}
-          <Button onClick={() => remove(index)} color="error">
-            <RemoveCircleIcon />
-          </Button>
-        </Stack>
+        <div style={{ display: 'flex', marginBottom: '16px' }} key={field.id}>
+          <div style={{ flex: 1, marginRight: '8px' }}>
+            <label htmlFor={`education.${index}.institution`}>
+              Institution
+            </label>
+            <Input
+              type="text"
+              id={`education.${index}.institution`}
+              {...register(`education.${index}.institution`)}
+              defaultValue={field.institution || ''}
+              style={{ width: '100%', padding: '8px' }}
+            />
+          </div>
+          <div style={{ flex: 1, marginRight: '8px' }}>
+            <label htmlFor={`education.${index}.degree`}>Degree</label>
+            <Input
+              type="text"
+              id={`education.${index}.degree`}
+              {...register(`education.${index}.degree`)}
+              defaultValue={field.degree || ''}
+              style={{ width: '100%', padding: '8px' }}
+            />
+          </div>
+          <div style={{ flex: 1, marginRight: '8px' }}>
+            <label htmlFor={`education.${index}.year`}>Year</label>
+            <Input
+              type="text"
+              id={`education.${index}.year`}
+              {...register(`education.${index}.year`)}
+              defaultValue={field.year || ''}
+              style={{ width: '100%', padding: '8px' }}
+            />
+          </div>
+          <button
+            type="button"
+            onClick={() => remove(index)}
+            style={{
+              color: 'red',
+              border: 'none',
+              background: 'transparent',
+              cursor: 'pointer',
+              alignSelf: 'center',
+            }}
+          >
+            <span role="img" aria-label="Remove">
+              ❌
+            </span>
+          </button>
+        </div>
       ))}
-      <Button onClick={() => append({ institution: '', degree: '', year: '' })}>
+      <Button
+        variant={'main'}
+        onClick={() => append({ institution: '', degree: '', year: '' })}
+        style={{ padding: '8px 16px', cursor: 'pointer' }}
+      >
         Add Education
       </Button>
     </>

@@ -1,104 +1,71 @@
-// Project.tsx
-import { useFieldArray, Controller, useFormContext } from 'react-hook-form';
-import { Stack, TextField, Button, Typography, Grid } from '@mui/material';
-import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
-import DateOnlyPicker from './DatePicker';
-import dayjs from 'dayjs';
-
-export type Projects = Array<{
-  name: string;
-  description: string;
-  startDate: string;
-  endDate: string;
-}>;
+import { useFieldArray, useFormContext } from 'react-hook-form';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
 
 function Project() {
-  const { control } = useFormContext();
+  const { control, register } = useFormContext();
   const { fields, append, remove } = useFieldArray({
     control,
-    name: 'project',
+    name: 'experience', // Make sure this matches the form data structure
   });
 
   return (
-    <>
-      <Typography variant="h6" gutterBottom>
-        Experiences
-      </Typography>
+    <div className="mb-3">
+      <h6 className="text-2xl">Experience</h6>
       {fields.map((field, index) => (
-        <Stack key={field.id} sx={{ marginBottom: 2 }}>
-          {/* Project Name and Dates in the same row */}
-          <Grid container marginBottom={2} spacing={2}>
-            <Grid item xs={4} spacing={2}>
-              <Controller
-                name={`project.${index}.name`}
-                control={control}
-                render={({ field }) => (
-                  <TextField fullWidth label="Project Name" {...field} />
-                )}
+        <div key={field.id} className="mb-6">
+          <div className="flex space-x-3 mb-4">
+            <div className="flex-1">
+              <label>Position</label>
+              <Input
+                type="text"
+                placeholder="Position"
+                {...register(`experience.${index}.name`)} // Bind with register
               />
-            </Grid>
-            <Grid item xs={4}>
-              <Controller
-                name={`project.${index}.startDate`}
-                control={control}
-                render={({ field }) => (
-                  <DateOnlyPicker
-                    label="Start Date"
-                    value={field.value ? dayjs(field.value) : null}
-                    onChange={(date) =>
-                      field.onChange(date ? date.format('YYYY-MM-DD') : '')
-                    }
-                  />
-                )}
+            </div>
+            <div className="flex-1">
+              <label>Start Date</label>
+              <Input
+                type="date"
+                placeholder="Start Date"
+                {...register(`experience.${index}.startDate`)} // Bind with register
               />
-            </Grid>
-            <Grid item xs={4}>
-              <Controller
-                name={`project.${index}.endDate`}
-                control={control}
-                render={({ field }) => (
-                  <DateOnlyPicker
-                    label="End Date"
-                    value={field.value ? dayjs(field.value) : null}
-                    onChange={(date) =>
-                      field.onChange(date ? date.format('YYYY-MM-DD') : '')
-                    }
-                  />
-                )}
+            </div>
+            <div className="flex-1">
+              <label>End Date</label>
+              <Input
+                type="date"
+                placeholder="End Date"
+                {...register(`experience.${index}.endDate`)} // Bind with register
               />
-            </Grid>
-          </Grid>
+            </div>
+          </div>
 
-          {/* Description on a separate row */}
-          <Grid item xs={12} marginBottom={2}>
-            <Controller
-              name={`project.${index}.description`}
-              control={control}
-              render={({ field }) => (
-                <TextField fullWidth label="Description" {...field} />
-              )}
+          <div className="mb-4">
+            <label>Description</label>
+            <Textarea
+              placeholder="Project Description"
+              {...register(`experience.${index}.description`)} // Bind with register
             />
-          </Grid>
+          </div>
 
-          {/* Remove button */}
-          <Button
-            variant="outlined"
-            color="error"
-            onClick={() => remove(index)}
-            startIcon={<RemoveCircleIcon />}
-          >
-            Remove Experience
+          <Button variant="destructive" onClick={() => remove(index)}>
+            Remove
           </Button>
-        </Stack>
+        </div>
       ))}
       <Button
+        type="button"
+        className="mb-3"
         onClick={() =>
           append({ name: '', description: '', startDate: '', endDate: '' })
         }
+        variant="main"
       >
-        Add Project
+        Add Experience
       </Button>
-    </>
+    </div>
   );
 }
 
