@@ -7,3 +7,4 @@ export const resumeRegistry = new OpenAPIRegistry();
 export const resumeRouter: Router = express.Router();
 
 resumeRouter.get('/', resumeController.getResumes);
+resumeRouter.get('/:id', resumeController.getResumeById);

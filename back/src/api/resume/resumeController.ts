@@ -9,6 +9,12 @@ class ResumeController {
       data: serviceResponse,
     });
   };
+  public getResumeById = async (req: Request, res: Response) => {
+    const serviceResponse = await new ResumeService().getById(req.params.id);
+    return res.json({
+      data: serviceResponse,
+    });
+  };
 }
 
 export const resumeController = new ResumeController();
