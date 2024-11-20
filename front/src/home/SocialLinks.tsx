@@ -7,31 +7,17 @@ function SocialLinks() {
   return (
     <>
       <div style={{ marginBottom: '16px' }}>
-        <label htmlFor="portFolio_website">Portfolio</label>
-        <Input
-          className="mb-3"
-          id="portFolio_website"
-          type="text"
-          placeholder="Enter your portfolio website"
-          value={getValues('portFolio_website')}
-          onChange={(e) => setValue('portFolio_website', e.target.value)}
-          style={{ width: '100%', padding: '8px', fontSize: '14px' }}
-        />
-      </div>
-
-      <div style={{ marginBottom: '16px' }}>
-        <label htmlFor="github">Github</label>
+        <label htmlFor="githhub">githhub</label>
         <Input
           className="mb-3"
           id="github"
           type="text"
-          placeholder="Enter your GitHub username"
+          placeholder="Enter your github profile URL"
           value={getValues('github')}
           onChange={(e) => setValue('github', e.target.value)}
           style={{ width: '100%', padding: '8px', fontSize: '14px' }}
         />
       </div>
-
       <div style={{ marginBottom: '16px' }}>
         <label htmlFor="linkedin">LinkedIn</label>
         <Input

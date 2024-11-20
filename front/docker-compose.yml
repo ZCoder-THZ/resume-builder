@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:8000" # Map port 8000 in the container to port 3000 on the host
+    volumes:
+      - .:/home/app # Sync the current directory with /home/app in the container
+      - /home/app/node_modules # Prevent syncing of node_modules
+    environment:
+      - NODE_ENV=development # Ensure it runs in development mode
+    command: ["npm", "run", "dev"] # Start the dev server

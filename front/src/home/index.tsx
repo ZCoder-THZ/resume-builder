@@ -12,6 +12,7 @@ type PersonalInfo = {
   email: string;
   phone: string;
   address: string;
+  portfolio: string;
 };
 
 type EducationType = { institution: string; degree: string; year: string };
@@ -28,6 +29,9 @@ type FormData = {
     endDate: string;
   }>;
   github: string;
+  linkedin: string;
+  facebook: string;
+  twitter: string;
 };
 
 function ResumeBuilder() {
@@ -38,9 +42,9 @@ function ResumeBuilder() {
         email: '',
         phone: '',
         address: '',
+        portfolio: '',
       },
       education: [{ institution: '', degree: '', year: '' }],
-      github: '',
       experience: [
         {
           name: '',
@@ -52,8 +56,7 @@ function ResumeBuilder() {
     },
   });
 
-  const { handleSubmit, reset, watch } = methods;
-  const formData = watch();
+  const { handleSubmit, reset } = methods;
 
   const onSubmit = (data: FormData) => {
     console.log('Resume Data:', data);
@@ -61,154 +64,115 @@ function ResumeBuilder() {
 
   return (
     <FormProvider {...methods}>
-      <div className="flex flex-col md:flex-row min-h-screen">
-        {/* Left side form */}
-        <div className="w-full md:w-2/5 p-4 md:p-8 border-b md:border-b-0 md:border-r">
-          <h4 className="text-2xl md:text-4xl font-bold mb-4 md:mb-6">
-            Resume Builder
-          </h4>
+      <div className="max-w-4xl mx-auto p-6 bg-gray-100 rounded-lg shadow-lg">
+        <h1 className="text-3xl font-bold mb-6 text-center">Resume Builder</h1>
 
-          <h6 className="text-lg font-semibold mb-4">Personal Information</h6>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          {/* Personal Information Section */}
+          <section>
+            <h2 className="text-xl font-semibold mb-4">Personal Information</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Controller
+                name="personalInfo.name"
+                control={methods.control}
+                render={({ field }) => (
+                  <div>
+                    <label className="block text-sm font-medium mb-1">
+                      Name
+                    </label>
+                    <Input
+                      {...field}
+                      type="text"
+                      placeholder="Enter your name"
+                    />
+                  </div>
+                )}
+              />
+              <Controller
+                name="personalInfo.email"
+                control={methods.control}
+                render={({ field }) => (
+                  <div>
+                    <label className="block text-sm font-medium mb-1">
+                      Email
+                    </label>
+                    <Input
+                      {...field}
+                      type="email"
+                      placeholder="Enter your email"
+                    />
+                  </div>
+                )}
+              />
+              <Controller
+                name="personalInfo.phone"
+                control={methods.control}
+                render={({ field }) => (
+                  <div>
+                    <label className="block text-sm font-medium mb-1">
+                      Phone
+                    </label>
+                    <Input
+                      {...field}
+                      type="tel"
+                      placeholder="Enter your phone"
+                    />
+                  </div>
+                )}
+              />
+              <Controller
+                name="personalInfo.portfolio"
+                control={methods.control}
+                render={({ field }) => (
+                  <div>
+                    <label className="block text-sm font-medium mb-1">
+                      Portfolio
+                    </label>
+                    <Input
+                      {...field}
+                      type="text"
+                      placeholder="Enter your portfolio"
+                    />
+                  </div>
+                )}
+              />
+              <Controller
+                name="personalInfo.address"
+                control={methods.control}
+                render={({ field }) => (
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium mb-1">
+                      Address
+                    </label>
+                    <Textarea {...field} placeholder="Enter your address" />
+                  </div>
+                )}
+              />
+            </div>
+          </section>
 
-          <Controller
-            name="personalInfo.name"
-            control={methods.control}
-            render={({ field }) => (
-              <div className="mb-3">
-                <label className="block font-medium">Name</label>
-                <Input {...field} type="text" placeholder="Enter name" />
-              </div>
-            )}
-          />
-          <Controller
-            name="personalInfo.email"
-            control={methods.control}
-            render={({ field }) => (
-              <div className="mb-3">
-                <label className="block font-medium">Email</label>
-                <Input {...field} type="email" placeholder="Enter email" />
-              </div>
-            )}
-          />
-          <Controller
-            name="personalInfo.phone"
-            control={methods.control}
-            render={({ field }) => (
-              <div className="mb-3">
-                <label className="block font-medium">Phone</label>
-                <Input {...field} type="tel" placeholder="Enter phone" />
-              </div>
-            )}
-          />
-          <Controller
-            name="personalInfo.address"
-            control={methods.control}
-            render={({ field }) => (
-              <div className="mb-3">
-                <label className="block font-medium">Address</label>
-                <Textarea {...field} placeholder="Enter address" />
-              </div>
-            )}
-          />
-
+          {/* Education Section */}
           <Education />
+
+          {/* Experience Section */}
           <Project />
+
+          {/* Skills Section */}
           <Skill />
+
+          {/* Social Links Section */}
           <SocialLinks />
 
-          <div className="flex mt-6">
-            <Button onClick={handleSubmit(onSubmit)} className="mr-4">
-              Generate Resume
+          {/* Actions */}
+          <div className="flex justify-end gap-4 mt-8">
+            <Button type="submit" className="bg-blue-600 text-white">
+              Save Resume
             </Button>
-            <Button variant="outline" onClick={() => reset()}>
+            <Button type="button" variant="outline" onClick={() => reset()}>
               Reset
             </Button>
           </div>
-        </div>
-
-        {/* Right side preview */}
-        <div className="w-full md:w-3/5 p-4 md:p-8 bg-gray-50">
-          <h4 className="text-2xl md:text-3xl font-bold mb-4 md:mb-6 text-gray-800">
-            Resume Preview
-          </h4>
-          <div className="border p-4 md:p-6 rounded-lg shadow-lg bg-white">
-            <div className="text-center mb-4 md:mb-6">
-              <h5 className="text-xl md:text-2xl font-semibold text-blue-700">
-                {formData.personalInfo?.name || 'Your Name'}
-              </h5>
-              <p className="text-gray-600">
-                {formData.personalInfo?.email || 'Your Email'}
-              </p>
-              <p className="text-gray-600">
-                {formData.personalInfo?.phone || 'Your Phone'}
-              </p>
-              <p className="text-gray-600">
-                {formData.personalInfo?.address || 'Your Address'}
-              </p>
-            </div>
-
-            <hr className="my-2 md:my-4" />
-
-            <section className="mb-4 md:mb-6">
-              <h6 className="text-lg md:text-xl font-semibold text-blue-700">
-                Education
-              </h6>
-              {formData.education.map((edu, index) => (
-                <div key={index} className="my-2">
-                  <p className="font-medium text-gray-800">
-                    {edu.institution || 'Institution'}
-                  </p>
-                  <p className="text-gray-600">
-                    {edu.degree || 'Degree'}, {edu.year || 'Year'}
-                  </p>
-                </div>
-              ))}
-            </section>
-
-            <section className="mb-4 md:mb-6">
-              <h6 className="text-lg md:text-xl font-semibold text-blue-700">
-                Experience
-              </h6>
-              {formData.experience.map((exp, index) => (
-                <div key={index} className="my-2">
-                  <p className="font-medium text-gray-800">
-                    {exp.name || 'Position'}
-                  </p>
-                  <p className="text-gray-600">
-                    {exp.startDate || 'Start Date'} -{' '}
-                    {exp.endDate || 'End Date'}
-                  </p>
-                  <p className="text-gray-600">
-                    {exp.description || 'Description'}
-                  </p>
-                </div>
-              ))}
-            </section>
-
-            <section className="mb-4 md:mb-6">
-              <h6 className="text-lg md:text-xl font-semibold text-blue-700">
-                Skills
-              </h6>
-              <ul className="list-disc ml-6 text-gray-600">
-                {formData.skill?.map((skill, index) => (
-                  <li key={index}>{skill}</li>
-                )) || 'Skills List'}
-              </ul>
-            </section>
-
-            <section>
-              <h6 className="text-lg md:text-xl font-semibold text-blue-700">
-                Social Links
-              </h6>
-              <p className="mb-3 text-gray-600">
-                GitHub: {formData.github || 'Your GitHub'}
-              </p>
-              <p className="mb-3 text-gray-600">
-                portfolio: {formData.portFolio_website || 'Your portfolio'}
-              </p>
-            </section>
-          </div>
-        </div>
+        </form>
       </div>
     </FormProvider>
   );

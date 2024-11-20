@@ -1,13 +1,29 @@
+import React from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
+import Select from 'react-select';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 
+const skillOptions = [
+  { value: 'React', label: 'React' },
+  { value: 'Node.js', label: 'Node.js' },
+  { value: 'JavaScript', label: 'JavaScript' },
+  { value: 'CSS', label: 'CSS' },
+];
+
+const toolOptions = [
+  { value: 'Visual Studio Code', label: 'Visual Studio Code' },
+  { value: 'Git', label: 'Git' },
+  { value: 'Docker', label: 'Docker' },
+  { value: 'Postman', label: 'Postman' },
+];
+
 function Project() {
-  const { control, register } = useFormContext();
+  const { control, register, setValue, getValues } = useFormContext();
   const { fields, append, remove } = useFieldArray({
     control,
-    name: 'experience', // Make sure this matches the form data structure
+    name: 'experience', // Match the form data structure
   });
 
   return (
@@ -22,6 +38,14 @@ function Project() {
                 type="text"
                 placeholder="Position"
                 {...register(`experience.${index}.name`)} // Bind with register
+              />
+            </div>
+            <div className="flex-1">
+              <label>Job title</label>
+              <Input
+                type="text"
+                placeholder="Job Title"
+                {...register(`experience.${index}.title`)} // Bind with register
               />
             </div>
             <div className="flex-1">
@@ -42,6 +66,50 @@ function Project() {
             </div>
           </div>
 
+          <div className="flex gap-1">
+            <div className="mb-4 flex-1">
+              <label>Skills</label>
+              <Select
+                options={skillOptions}
+                isMulti
+                placeholder="Select Skills"
+                className="react-select-container"
+                classNamePrefix="react-select"
+                onChange={(selectedOptions) =>
+                  setValue(
+                    `experience.${index}.skills`,
+                    selectedOptions.map((option) => option.value) // Store only values
+                  )
+                }
+                defaultValue={(
+                  getValues(`experience.${index}.skills`) || []
+                ).map((value: string) =>
+                  skillOptions.find((option) => option.value === value)
+                )}
+              />
+            </div>
+            <div className="mb-4 flex-1">
+              <label>Tools</label>
+              <Select
+                options={toolOptions}
+                isMulti
+                placeholder="Select Tools"
+                className="react-select-container"
+                classNamePrefix="react-select"
+                onChange={(selectedOptions) =>
+                  setValue(
+                    `experience.${index}.tools`,
+                    selectedOptions.map((option) => option.value) // Store only values
+                  )
+                }
+                defaultValue={(
+                  getValues(`experience.${index}.tools`) || []
+                ).map((value: string) =>
+                  toolOptions.find((option) => option.value === value)
+                )}
+              />
+            </div>
+          </div>
           <div className="mb-4">
             <label>Description</label>
             <Textarea
@@ -59,7 +127,15 @@ function Project() {
         type="button"
         className="mb-3"
         onClick={() =>
-          append({ name: '', description: '', startDate: '', endDate: '' })
+          append({
+            name: '',
+            title: '',
+            description: '',
+            startDate: '',
+            endDate: '',
+            skills: [],
+            tools: [],
+          })
         }
         variant="main"
       >
