@@ -15,4 +15,7 @@ export default class Skillservice {
   async getById(id: string) {
     return await this.resumeRepository.findByIdAsync(id);
   }
+  async create(body: any) {
+    return await this.resumeRepository.createAsync(body);
+  }
 }

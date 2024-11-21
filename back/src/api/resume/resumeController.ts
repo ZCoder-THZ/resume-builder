@@ -15,6 +15,14 @@ class ResumeController {
       data: serviceResponse,
     });
   };
+  public createResume = async (req: Request, res: Response) => {
+    console.log('create reums');
+    const serviceResponse = await new ResumeService().create(req.body);
+    return res.json({
+      data: serviceResponse,
+      status: 'success',
+    });
+  };
 }
 
 export const resumeController = new ResumeController();
