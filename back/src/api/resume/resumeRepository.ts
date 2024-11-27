@@ -1,8 +1,8 @@
 import dbConnection from '@/common/dbConnection';
-import { ResumeWithUser } from './resumeModel';
+import { ResumeWithUser, ResumeSchema } from './resumeModel';
 import { ResultSetHeader } from 'mysql2';
+import { z } from 'zod';
 export class ResumeRepository {
-  // Find all resumes with associated user details
   async findAllAsync(): Promise<ResumeWithUser[]> {
     try {
       const [rows] = await dbConnection.promise().query<ResumeWithUser[]>(
@@ -38,14 +38,20 @@ export class ResumeRepository {
         linkedin,
         twitter,
         skills,
+        education,
         experience,
       } = body;
 
       const { name, email, phone, address, portfolio, summary } = personalInfo;
+      const result = ResumeSchema.safeParse(body);
 
-      if (!name || !email || !phone || !address || !portfolio || !summary) {
-        throw new Error('Missing required fields');
+      if (!result.success) {
+        console.error('Validation failed:', result.error.errors);
       }
+
+      // Access validated data
+      const parsedData = result.data;
+      console.log('Validation successful:', parsedData);
 
       // Insert personal info
       const [personalInfoResult] = await dbConnection
@@ -71,9 +77,8 @@ export class ResumeRepository {
             [socialLinkData]
           );
       }
-      console.log(experience);
-      // Process experience array
-      // Normalize keys to avoid case-sensitivity issues
+      console.log(education, 'education');
+
       for (const exp of experience) {
         const {
           jobTitle: rawJobTitle, // Map potential inconsistent case
@@ -99,9 +104,9 @@ export class ResumeRepository {
           .promise()
           .query<ResultSetHeader>(
             `
-    INSERT INTO experience (resume_id, job_title, company_name, description, location, start_date, end_date)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
-    `,
+      INSERT INTO experience (resume_id, job_title, company_name, description, location, start_date, end_date)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+      `,
             [
               resumeId,
               jobTitle,
@@ -139,6 +144,47 @@ export class ResumeRepository {
             .query(`INSERT INTO experience_tools (exp_id, tool_id) VALUES ?`, [
               toolValues,
             ]);
+        }
+      }
+      for (const edu of education) {
+        const educationData = education
+          .filter(
+            (edu: any) =>
+              edu.institution &&
+              edu.degree &&
+              edu.fieldOfStudy &&
+              edu.location &&
+              edu.startYear &&
+              edu.endYear
+          )
+          .map((edu: any) => [
+            resumeId,
+            edu.institution,
+            edu.degree,
+            edu.fieldOfStudy,
+            edu.location,
+            edu.startYear,
+            edu.endYear,
+          ]);
+
+        if (educationData.length) {
+          try {
+            const [result] = await dbConnection
+              .promise()
+              .query<ResultSetHeader>(
+                `
+              INSERT INTO education (resume_id, institution, degree, field_of_study, location, start_date, end_date)
+              VALUES ?
+              `,
+                [educationData]
+              );
+            console.log('Batch insert successful:', result);
+          } catch (error) {
+            console.error('Error during batch insert:', error);
+            throw new Error('Failed to insert education data');
+          }
+        } else {
+          console.error('No valid education data to insert');
         }
       }
 

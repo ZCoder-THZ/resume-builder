@@ -1,4 +1,6 @@
 import { useForm, Controller, FormProvider } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { formDataSchema } from '@/lib/formModel';
 import Education from './Education';
 import SocialLinks from './SocialLinks';
 import Skill from './Skill';
@@ -6,28 +8,42 @@ import Project from './Experience';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
-
+import axios from 'axios';
 type PersonalInfo = {
   name: string;
   email: string;
   phone: string;
   address: string;
   portfolio: string;
+  summary: string;
 };
 
-type EducationType = { institution: string; degree: string; year: string };
-type Skills = string;
+type EducationType = {
+  institution: string;
+  degree: string;
+  startYear: string;
+  endYear: string;
+  location: string;
+  fieldOfStudy: string;
+};
+type Skills = [];
+export type ExperienceType = {
+  jobTitle: string;
+  companyName: string;
+  location?: string; // Make optional if not always required
+
+  description: string;
+  startDate: string;
+  endDate?: string; // Make optional if not always required
+  skills?: string[]; // Make optional
+  tools?: string[]; // Make optional
+};
 
 type FormData = {
   personalInfo: PersonalInfo;
   education: EducationType[];
-  skill: Skills[];
-  experience: Array<{
-    name: string;
-    description: string;
-    startDate: string;
-    endDate: string;
-  }>;
+  skills: Skills[];
+  experience: Array<ExperienceType>;
   github: string;
   linkedin: string;
   facebook: string;
@@ -36,6 +52,7 @@ type FormData = {
 
 function ResumeBuilder() {
   const methods = useForm({
+    resolver: zodResolver(formDataSchema),
     defaultValues: {
       personalInfo: {
         name: '',
@@ -43,23 +60,60 @@ function ResumeBuilder() {
         phone: '',
         address: '',
         portfolio: '',
+        summary: 'someone',
       },
-      education: [{ institution: '', degree: '', year: '' }],
+      education: [
+        {
+          institution: '',
+          degree: '',
+          startYear: '',
+          endYear: '',
+          location: '',
+          fieldOfStudy: '',
+        },
+      ],
       experience: [
         {
-          name: '',
           description: '',
           startDate: '',
+          jobTitle: '',
+          companyName: '',
+          location: '',
+
           endDate: '',
         },
       ],
+      // skill: [],
+      github: '',
+      linkedin: '',
+      facebook: '',
+      twitter: '',
     },
   });
 
-  const { handleSubmit, reset } = methods;
-
+  const {
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = methods;
+  console.log(errors);
   const onSubmit = (data: FormData) => {
     console.log('Resume Data:', data);
+    console.log(errors);
+    try {
+      const res = axios
+        .post('http://localhost:4000/resumes', data)
+        .then((response) => {
+          console.log('Resume created successfully:', response.data);
+          reset();
+          console.log(res);
+        });
+      console.log('form submitted');
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error('Error creating resume:', error.message);
+      }
+    }
   };
 
   return (
@@ -85,6 +139,11 @@ function ResumeBuilder() {
                       type="text"
                       placeholder="Enter your name"
                     />
+                    {errors.personalInfo?.name && (
+                      <p className="text-red-500">
+                        {errors.personalInfo.name.message}
+                      </p>
+                    )}
                   </div>
                 )}
               />
@@ -101,6 +160,11 @@ function ResumeBuilder() {
                       type="email"
                       placeholder="Enter your email"
                     />
+                    {errors.personalInfo?.email && (
+                      <p className="text-red-500">
+                        {errors.personalInfo.email.message}
+                      </p>
+                    )}
                   </div>
                 )}
               />
@@ -117,6 +181,11 @@ function ResumeBuilder() {
                       type="tel"
                       placeholder="Enter your phone"
                     />
+                    {errors.personalInfo?.email && (
+                      <p className="text-red-500">
+                        {errors.personalInfo.phone?.message}
+                      </p>
+                    )}
                   </div>
                 )}
               />
@@ -133,6 +202,11 @@ function ResumeBuilder() {
                       type="text"
                       placeholder="Enter your portfolio"
                     />
+                    {errors.personalInfo?.email && (
+                      <p className="text-red-500">
+                        {errors.personalInfo.portfolio?.message}
+                      </p>
+                    )}
                   </div>
                 )}
               />
@@ -145,6 +219,11 @@ function ResumeBuilder() {
                       Address
                     </label>
                     <Textarea {...field} placeholder="Enter your address" />
+                    {errors.personalInfo?.email && (
+                      <p className="text-red-500">
+                        {errors.personalInfo.address?.message}
+                      </p>
+                    )}
                   </div>
                 )}
               />

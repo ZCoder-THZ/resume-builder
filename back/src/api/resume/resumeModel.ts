@@ -12,62 +12,54 @@ export type ResumeWithUser = z.infer<typeof ResumeWithUserSchema> &
 
 // Resume schema for the base resume data
 export const ResumeSchema = z.object({
-  id: z.number().optional(), // Assuming `id` might be auto-generated
-  user_id: z.number(),
-  title: z.string(),
-  summary: z.string(),
-  createdAt: z.string(),
-  updatedAt: z.date(),
   personalInfo: z.object({
     name: z.string(),
     email: z.string().email(),
     phone: z.string(),
     address: z.string(),
-    portfolio: z.string().url(),
+    portfolio: z.string(), // Valid URL
+    summary: z.string(),
   }),
   education: z.array(
     z.object({
-      // You can expand this schema if needed for education
-      school: z.string().optional(),
-      degree: z.string().optional(),
-      startDate: z.string().optional(),
-      endDate: z.string().optional(),
+      institution: z.string(),
+      degree: z.string(),
+      fieldOfStudy: z.string(),
+      location: z.string(),
+      startYear: z.string(), // Consider making this a date if possible
+      endYear: z.string(),
     })
   ),
   experience: z.array(
     z.object({
-      name: z.string(),
+      jobTitle: z.string().or(z.literal(undefined)), // Accept `JobTitle` case mismatch
+      companyName: z.string(),
       description: z.string(),
+      location: z.string(),
       startDate: z.string(),
       endDate: z.string(),
-      title: z.string(),
-      skills: z.array(z.string()),
-      tools: z.array(z.string()),
+      expSkills: z.array(z.number()).optional(),
+      expTools: z.array(z.number()).optional(),
     })
   ),
-  skills: z.array(
-    z.object({
-      value: z.string(),
-      label: z.string(),
-      color: z.string(),
-      isFixed: z.boolean().optional(),
-    })
-  ),
-  github: z.string().url(),
-  linkedin: z.string().url(),
-  facebook: z.string().url(),
-  twitter: z.string().url(),
+  // skills: z.array(z.object({ value: z.number() })),
+  github: z.string().url().optional(),
+  linkedin: z.string().url().optional(),
+  facebook: z.string().url().optional(),
+  twitter: z.string().url().optional(),
 });
 
-// Extend the Resume schema with user data
+// Extend the Resume schema with user-specific data
 export const ResumeWithUserSchema = ResumeSchema.extend({
-  name: z.string(),
-  email: z.string().email(),
-  phone: z.string(),
-  address: z.string(),
+  userName: z.string(),
+  userEmail: z.string().email(),
+  userPhone: z.string(),
+  userAddress: z.string(),
 });
 
-// Input Validation for 'GET users/:id' endpoint
+// Input validation schema for endpoints like 'GET users/:id'
 export const GetResumeSchema = z.object({
-  params: z.object({ id: commonValidations.id }),
+  params: z.object({
+    id: commonValidations.id, // Assuming `commonValidations.id` handles numeric validation
+  }),
 });

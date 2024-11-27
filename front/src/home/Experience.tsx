@@ -1,30 +1,92 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
-import Select from 'react-select';
+import Select, { MultiValue, SingleValue } from 'react-select';
+import debounce from 'lodash.debounce';
+import axios from 'axios';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 
-const skillOptions = [
-  { value: 'React', label: 'React' },
-  { value: 'Node.js', label: 'Node.js' },
-  { value: 'JavaScript', label: 'JavaScript' },
-  { value: 'CSS', label: 'CSS' },
-];
+export type ExperienceType = {
+  position: string;
+  jobTitle: string;
+  companyName: string;
+  startDate: string;
+  endDate: string;
+  skills: string[];
+  tools: string[];
+  description: string;
+};
 
-const toolOptions = [
+type SkillOption = { value: string; label: string; id: number };
+type ToolOption = { value: string; label: string };
+
+type FormData = {
+  experience: ExperienceType[];
+};
+
+// Static options
+const toolOptions: ToolOption[] = [
   { value: 'Visual Studio Code', label: 'Visual Studio Code' },
   { value: 'Git', label: 'Git' },
   { value: 'Docker', label: 'Docker' },
   { value: 'Postman', label: 'Postman' },
 ];
 
+// Component
 function Project() {
-  const { control, register, setValue, getValues } = useFormContext();
+  const {
+    control,
+    register,
+    setValue,
+    getValues,
+    formState: { errors },
+  } = useFormContext<FormData>();
+
   const { fields, append, remove } = useFieldArray({
     control,
-    name: 'experience', // Match the form data structure
+    name: 'experience',
   });
+
+  const [skillsOptions, setSkillsOptions] = useState<SkillOption[]>([]);
+  const [inputValue, setInputValue] = useState('');
+
+  // Fetch skills dynamically
+  const fetchSkills = async (input: string) => {
+    if (input.length < 3) {
+      setSkillsOptions([]);
+      return;
+    }
+
+    try {
+      const response = await axios.get<{
+        data: { skill_name: string; id: number }[];
+      }>(`http://localhost:4000/skills/search?keyword=${input}`);
+
+      if (response.status === 200) {
+        setSkillsOptions(
+          response.data.data.map((skill) => ({
+            value: skill.skill_name,
+            label: skill.skill_name,
+            id: skill.id,
+          }))
+        );
+      }
+    } catch (error) {
+      console.error('Error fetching skills:', error);
+      setSkillsOptions([]);
+    }
+  };
+
+  const debouncedFetchSkills = useCallback(
+    debounce((input: string) => fetchSkills(input), 300),
+    []
+  );
+
+  const handleSkillInputChange = (newValue: string) => {
+    setInputValue(newValue);
+    debouncedFetchSkills(newValue);
+  };
 
   return (
     <div className="mb-3">
@@ -37,32 +99,52 @@ function Project() {
               <Input
                 type="text"
                 placeholder="Position"
-                {...register(`experience.${index}.name`)} // Bind with register
+                {...register(`experience.${index}.position` as const)}
               />
+              {errors.experience?.[index]?.position && (
+                <p className="text-red-500">
+                  {errors.experience[index].position?.message}
+                </p>
+              )}
             </div>
             <div className="flex-1">
-              <label>Job title</label>
+              <label>Job Title</label>
               <Input
                 type="text"
                 placeholder="Job Title"
-                {...register(`experience.${index}.title`)} // Bind with register
+                {...register(`experience.${index}.jobTitle` as const)}
               />
+              {errors.experience?.[index]?.jobTitle && (
+                <p className="text-red-500">
+                  {errors.experience[index].jobTitle?.message}
+                </p>
+              )}
             </div>
             <div className="flex-1">
               <label>Start Date</label>
               <Input
                 type="date"
                 placeholder="Start Date"
-                {...register(`experience.${index}.startDate`)} // Bind with register
+                {...register(`experience.${index}.startDate` as const)}
               />
+              {errors.experience?.[index]?.startDate && (
+                <p className="text-red-500">
+                  {errors.experience[index].startDate?.message}
+                </p>
+              )}
             </div>
             <div className="flex-1">
               <label>End Date</label>
               <Input
                 type="date"
                 placeholder="End Date"
-                {...register(`experience.${index}.endDate`)} // Bind with register
+                {...register(`experience.${index}.endDate` as const)}
               />
+              {errors.experience?.[index]?.endDate && (
+                <p className="text-red-500">
+                  {errors.experience[index].endDate?.message}
+                </p>
+              )}
             </div>
           </div>
 
@@ -70,22 +152,28 @@ function Project() {
             <div className="mb-4 flex-1">
               <label>Skills</label>
               <Select
-                options={skillOptions}
+                options={skillsOptions}
                 isMulti
                 placeholder="Select Skills"
                 className="react-select-container"
                 classNamePrefix="react-select"
-                onChange={(selectedOptions) =>
+                onInputChange={handleSkillInputChange}
+                onChange={(selectedOptions: MultiValue<SkillOption>) =>
                   setValue(
-                    `experience.${index}.skills`,
-                    selectedOptions.map((option) => option.value) // Store only values
+                    `experience.${index}.skills` as const,
+                    selectedOptions.map((option) => option?.value)
                   )
                 }
                 defaultValue={(
                   getValues(`experience.${index}.skills`) || []
                 ).map((value: string) =>
-                  skillOptions.find((option) => option.value === value)
+                  skillsOptions.find((option) => option.value === value)
                 )}
+                noOptionsMessage={() =>
+                  inputValue.length >= 3
+                    ? 'No skills found'
+                    : 'Type at least 3 characters'
+                }
               />
             </div>
             <div className="mb-4 flex-1">
@@ -96,10 +184,10 @@ function Project() {
                 placeholder="Select Tools"
                 className="react-select-container"
                 classNamePrefix="react-select"
-                onChange={(selectedOptions) =>
+                onChange={(selectedOptions: MultiValue<ToolOption>) =>
                   setValue(
-                    `experience.${index}.tools`,
-                    selectedOptions.map((option) => option.value) // Store only values
+                    `experience.${index}.tools` as const,
+                    selectedOptions.map((option) => option.value)
                   )
                 }
                 defaultValue={(
@@ -111,10 +199,23 @@ function Project() {
             </div>
           </div>
           <div className="mb-4">
+            <label>Company Name</label>
+            <Input
+              type="text"
+              placeholder="Company Name"
+              {...register(`experience.${index}.companyName` as const)}
+            />
+            {errors.experience?.[index]?.companyName && (
+              <p className="text-red-500">
+                {errors.experience[index].companyName?.message}
+              </p>
+            )}
+          </div>
+          <div className="mb-4">
             <label>Description</label>
             <Textarea
-              placeholder="Project Description"
-              {...register(`experience.${index}.description`)} // Bind with register
+              placeholder="Description"
+              {...register(`experience.${index}.description` as const)}
             />
           </div>
 
@@ -128,13 +229,14 @@ function Project() {
         className="mb-3"
         onClick={() =>
           append({
-            name: '',
-            title: '',
-            description: '',
+            position: '',
+            jobTitle: '',
+            companyName: '',
             startDate: '',
             endDate: '',
             skills: [],
             tools: [],
+            description: '',
           })
         }
         variant="main"
