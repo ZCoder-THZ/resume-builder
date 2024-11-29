@@ -2,6 +2,8 @@ import dbConnection from '@/common/dbConnection';
 import { ResumeWithUser, ResumeSchema } from './resumeModel';
 import { ResultSetHeader } from 'mysql2';
 import { z } from 'zod';
+import { Skill } from '../skill/skillModel';
+// import { Skill } from '../skill/skillModel';
 export class ResumeRepository {
   async findAllAsync(): Promise<ResumeWithUser[]> {
     try {
@@ -186,6 +188,31 @@ export class ResumeRepository {
         } else {
           console.error('No valid education data to insert');
         }
+      }
+      const skillData = skills.map((skill: Skill) => [resumeId, skill.id]);
+      for (const skill of skills) {
+        if (!skill.id) {
+          console.error('Skill ID is missing:', skill);
+          continue;
+        }
+        skillData.push([resumeId, skill.id]);
+      }
+
+      if (skillData.length > 0) {
+        try {
+          const [result] = await dbConnection
+            .promise()
+            .query<ResultSetHeader>(
+              `INSERT INTO resume_skills (resume_id, skill_id) VALUES ?`,
+              [skillData]
+            );
+          console.log('Skills batch insert successful:', result);
+        } catch (error) {
+          console.error('Error during skills batch insert:', error);
+          throw new Error('Failed to insert skills data');
+        }
+      } else {
+        console.error('No valid skills data to insert');
       }
 
       return { personalInfoResult };

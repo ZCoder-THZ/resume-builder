@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 type PersonalInfo = {
   name: string;
   email: string;
@@ -109,9 +110,16 @@ function ResumeBuilder() {
           console.log(res);
         });
       console.log('form submitted');
+      toast('Success', {
+        position: 'bottom-right',
+        className: 'foo-bar',
+      });
     } catch (error) {
       if (error instanceof Error) {
-        console.error('Error creating resume:', error.message);
+        toast('Custom Style Notification with css class!', {
+          position: 'bottom-right',
+          className: 'foo-bar',
+        });
       }
     }
   };
@@ -247,7 +255,17 @@ function ResumeBuilder() {
             <Button type="submit" className="bg-blue-600 text-white">
               Save Resume
             </Button>
-            <Button type="button" variant="outline" onClick={() => reset()}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                reset();
+                toast('Success', {
+                  position: 'bottom-right',
+                  className: 'foo-bar',
+                });
+              }}
+            >
               Reset
             </Button>
           </div>
