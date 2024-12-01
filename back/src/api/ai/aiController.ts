@@ -68,11 +68,13 @@ class AiController {
 
       res.status(200).json(response.data.choices[0].message.content);
     } catch (error) {
-      console.error('Error communicating with OpenAI API:', error.message);
-      return res.status(500).json({
-        error: 'Failed to communicate with OpenAI API',
-        details: error.message,
-      });
+      if (error as Error) {
+        console.error('Error communicating with OpenAI API:', error.message);
+        return res.status(500).json({
+          error: 'Failed to communicate with OpenAI API',
+          details: error.message,
+        });
+      }
     }
   };
 }

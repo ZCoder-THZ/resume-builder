@@ -7,13 +7,14 @@ import { healthCheckRegistry } from '@/api/healthCheck/healthCheckRouter';
 import { issueRgistry } from '@/api/issue/issueRoute';
 import { userRegistry } from '@/api/user/userRouter';
 import { skillRegistry } from '@/api/skill/skillRoute';
-
+import { resumeRegistry } from '@/api/resume/resumeRoute';
 export function generateOpenAPIDocument() {
   const registry = new OpenAPIRegistry([
     healthCheckRegistry,
     userRegistry,
     issueRgistry,
     skillRegistry,
+    resumeRegistry,
   ]);
   const generator = new OpenApiGeneratorV3(registry.definitions);
 

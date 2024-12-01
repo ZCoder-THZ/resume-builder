@@ -3,15 +3,13 @@ import { ResumeWithUser, ResumeSchema } from './resumeModel';
 import { ResultSetHeader } from 'mysql2';
 import { z } from 'zod';
 import { Skill } from '../skill/skillModel';
-// import { Skill } from '../skill/skillModel';
+
 export class ResumeRepository {
   async findAllAsync(): Promise<ResumeWithUser[]> {
     try {
-      const [rows] = await dbConnection.promise().query<ResumeWithUser[]>(
-        `SELECT resumes.*, users.name, users.email, users.phone, users.address
-         FROM resumes
-         LEFT JOIN users ON resumes.user_id = users.id;`
-      );
+      const [rows] = await dbConnection
+        .promise()
+        .query<ResumeWithUser[]>(`SELECT * from resumes`);
       console.log(rows, 'from repository');
       return rows;
     } catch (error) {
@@ -49,6 +47,12 @@ export class ResumeRepository {
 
       if (!result.success) {
         console.error('Validation failed:', result.error.errors);
+
+        if (result.error as Error) {
+          return {
+            error: result.error,
+          };
+        }
       }
 
       // Access validated data

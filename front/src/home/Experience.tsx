@@ -154,6 +154,7 @@ function Project() {
               <Select
                 options={skillsOptions}
                 isMulti
+                {...field}
                 placeholder="Select Skills"
                 className="react-select-container"
                 classNamePrefix="react-select"
